@@ -5,7 +5,8 @@ import { useQuery } from "convex/react";
 import { formatDistance } from "date-fns";
 import { CopyIcon, PlayIcon } from "lucide-react";
 import Image from "next/image";
-import { MAX_IMAGES } from "@/lib/constants";
+import { type AspectRatio, MAX_IMAGES } from "@/lib/constants";
+import { useAppStore } from "@/store/app-store";
 import { api } from "../../convex/_generated/api";
 import type { Doc } from "../../convex/_generated/dataModel";
 
@@ -24,6 +25,7 @@ export const History = () => {
 const GenerationCard: React.FC<{ generation: Doc<"generations"> }> = ({
   generation,
 }) => {
+  const { loadGenerationToForm } = useAppStore();
   const distance = formatDistance(new Date(), new Date(generation.createdAt));
   const emptyImageSlots = Math.min(MAX_IMAGES - generation.images.length, 1);
 
@@ -72,6 +74,13 @@ const GenerationCard: React.FC<{ generation: Doc<"generations"> }> = ({
           variant="outline"
           size="sm"
           leftSection={<PlayIcon size={16} strokeWidth={1.5} />}
+          onClick={() =>
+            loadGenerationToForm(
+              generation.prompt,
+              generation.aspectRatio as AspectRatio,
+              generation.model
+            )
+          }
         >
           Playground
         </Button>

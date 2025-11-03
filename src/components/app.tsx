@@ -77,10 +77,23 @@ export const App = () => {
       <AppShellMain component={ScrollArea} bg="gray.0">
         <div className="flex flex-col md:p-6 gap-4 md:gap-6">
           <Header />
-          {(activeTab === "image-edit" || activeTab === "text-to-image") && (
+          <div
+            style={{
+              display:
+                activeTab === "image-edit" || activeTab === "text-to-image"
+                  ? "block"
+                  : "none",
+            }}
+          >
             <Playground />
-          )}
-          {activeTab === "history" && <History />}
+          </div>
+          <div
+            style={{
+              display: activeTab === "history" ? "block" : "none",
+            }}
+          >
+            <History />
+          </div>
         </div>
       </AppShellMain>
     </AppShell>

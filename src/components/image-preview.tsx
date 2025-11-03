@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  Button,
-  Loader as MantineLoader,
-  Paper,
-  Text,
-} from "@mantine/core";
+import { Button, Loader as MantineLoader, Paper, Text } from "@mantine/core";
 import { useQuery } from "convex/react";
 import {
   AlertCircleIcon,
@@ -37,7 +32,12 @@ export const ImagePreview = () => {
 };
 
 const ImagePreviewContent = () => {
-  const { currentGenerationId } = useAppStore();
+  const {
+    currentGenerationId,
+    resetForm,
+    setFormReferenceImage,
+    setActiveTab,
+  } = useAppStore();
   const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
 
   // Subscribe to generation updates
@@ -110,7 +110,7 @@ const ImagePreviewContent = () => {
         return (
           <div key={image.url} className="flex flex-col gap-2">
             <div
-              className="relative w-full overflow-hidden rounded-md"
+              className="relative w-full overflow-hidden rounded-sm"
               style={{ aspectRatio: aspectRatio.toString() }}
             >
               {/* Placeholder with blur effect */}
@@ -136,6 +136,11 @@ const ImagePreviewContent = () => {
                 size="compact-sm"
                 leftSection={<PencilIcon size={16} strokeWidth={1.5} />}
                 disabled={!isImageLoaded}
+                onClick={() => {
+                  resetForm();
+                  setFormReferenceImage(image.url);
+                  setActiveTab("image-edit");
+                }}
               >
                 Edit
               </Button>
@@ -200,4 +205,3 @@ const GenerationFailed = () => {
     </div>
   );
 };
-

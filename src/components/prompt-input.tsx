@@ -18,6 +18,7 @@ import {
   WandIcon,
   ZapIcon,
 } from "lucide-react";
+import { useEffect } from "react";
 import { cn } from "@/lib/cn";
 import { ASPECT_RATIOS, type AspectRatio } from "@/lib/constants";
 import { useAppStore } from "@/store/app-store";
@@ -25,13 +26,26 @@ import { api } from "../../convex/_generated/api";
 import { ReferenceImagesUpload } from "./reference-images-upload";
 
 export const PromptInput = () => {
-  const { activeTab, setCurrentGenerationId, currentGenerationId } =
-    useAppStore();
+  const {
+    activeTab,
+    setCurrentGenerationId,
+    currentGenerationId,
+    formPrompt,
+    formAspectRatio,
+    formNumberOfImages,
+    formReferenceImages,
+    setFormPrompt,
+    setFormAspectRatio,
+    setFormNumberOfImages,
+    setFormReferenceImages,
+    resetForm,
+  } = useAppStore();
 
   const { complete, completion, isLoading } = useCompletion({
     api: "/api/refine",
     onFinish: (_prompt, completion) => {
       form.setFieldValue("prompt", completion);
+      setFormPrompt(completion);
     },
   });
 
@@ -42,12 +56,22 @@ export const PromptInput = () => {
     referenceImages: string[];
   }>({
     initialValues: {
-      prompt: "",
-      aspectRatio: "1:1",
-      numberOfImages: 1,
-      referenceImages: [],
+      prompt: formPrompt,
+      aspectRatio: formAspectRatio,
+      numberOfImages: formNumberOfImages,
+      referenceImages: formReferenceImages,
     },
   });
+
+  // Sync form with store when store values change
+  useEffect(() => {
+    form.setValues({
+      prompt: formPrompt,
+      aspectRatio: formAspectRatio,
+      numberOfImages: formNumberOfImages,
+      referenceImages: formReferenceImages,
+    });
+  }, [formPrompt, formAspectRatio, formNumberOfImages, formReferenceImages]);
 
   const textAreaValue = isLoading
     ? completion || form.values.prompt
@@ -82,8 +106,7 @@ export const PromptInput = () => {
     isLoading || !isPromptValid || isGenerationInProgress;
 
   const handleReset = () => {
-    form.reset();
-    setCurrentGenerationId(null);
+    resetForm();
   };
 
   const isRefineButtonDisabled = isLoading || !isPromptValid;
@@ -117,7 +140,10 @@ export const PromptInput = () => {
           value={textAreaValue}
           readOnly={isLoading}
           onChange={(e) => {
-            if (!isLoading) form.setFieldValue("prompt", e.target.value);
+            if (!isLoading) {
+              form.setFieldValue("prompt", e.target.value);
+              setFormPrompt(e.target.value);
+            }
           }}
         />
         <Button
@@ -142,9 +168,10 @@ export const PromptInput = () => {
           <InputWrapper label="Reference images">
             <ReferenceImagesUpload
               referenceImages={form.values.referenceImages}
-              onChange={(images) =>
-                form.setFieldValue("referenceImages", images)
-              }
+              onChange={(images) => {
+                form.setFieldValue("referenceImages", images);
+                setFormReferenceImages(images);
+              }}
             />
           </InputWrapper>
         )}
@@ -153,17 +180,21 @@ export const PromptInput = () => {
             label="Aspect ratio"
             data={ASPECT_RATIOS}
             value={form.values.aspectRatio}
-            onChange={(value) =>
-              form.setFieldValue("aspectRatio", value as AspectRatio)
-            }
+            onChange={(value) => {
+              const aspectRatio = value as AspectRatio;
+              form.setFieldValue("aspectRatio", aspectRatio);
+              setFormAspectRatio(aspectRatio);
+            }}
           />
           <Select
             label="Number of images"
             data={["1", "2", "3", "4"]}
             value={form.values.numberOfImages.toString()}
-            onChange={(value) =>
-              form.setFieldValue("numberOfImages", Number(value))
-            }
+            onChange={(value) => {
+              const numberOfImages = Number(value);
+              form.setFieldValue("numberOfImages", numberOfImages);
+              setFormNumberOfImages(numberOfImages);
+            }}
           />
         </div>
       </Paper>
