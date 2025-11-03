@@ -91,13 +91,17 @@ const PromptInput = () => {
   const isGenerationInProgress =
     generation?.status === "SUBMITTED" || generation?.status === "IN_PROGRESS";
 
+  const isPromptValid = form.values.prompt.trim().length >= 10;
+
   const isGenerateButtonDisabled =
-    isLoading || form.values.prompt.length < 10 || isGenerationInProgress;
+    isLoading || !isPromptValid || isGenerationInProgress;
 
   const handleReset = () => {
     form.reset();
     setCurrentGenerationId(null);
   };
+
+  const isRefineButtonDisabled = isLoading || !isPromptValid;
 
   return (
     <div className="space-y-4">
@@ -143,7 +147,7 @@ const PromptInput = () => {
           }
           className={cn(
             "w-fit -mt-1.5",
-            isLoading && "opacity-50 pointer-events-none"
+            isRefineButtonDisabled && "opacity-50 pointer-events-none"
           )}
           onClick={async () => await complete(form.values.prompt)}
         >

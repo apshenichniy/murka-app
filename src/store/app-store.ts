@@ -15,7 +15,7 @@ export type AppStore = {
 
 export const useAppStore = create<AppStore>()(
   devtools((set) => ({
-    activeTab: "text-to-image",
+    activeTab: "image-edit",
     setActiveTab: (tab) => set({ activeTab: tab }),
     currentGenerationId: null,
     setCurrentGenerationId: (generationId) =>
