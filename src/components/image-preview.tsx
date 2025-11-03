@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/cn";
+import { downloadImage } from "@/lib/download-image";
 import { useAppStore } from "@/store/app-store";
 import { api } from "../../convex/_generated/api";
 
@@ -69,25 +70,6 @@ const ImagePreviewContent = () => {
   if (isGenerationInProgress) {
     return <GenerationInProgress />;
   }
-
-  const handleDownload = async (url: string, fileName: string) => {
-    try {
-      const response = await fetch(url);
-      const blob = await response.blob();
-      const blobUrl = window.URL.createObjectURL(blob);
-
-      const link = document.createElement("a");
-      link.href = blobUrl;
-      link.download = fileName;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-
-      window.URL.revokeObjectURL(blobUrl);
-    } catch (error) {
-      console.error("Failed to download image:", error);
-    }
-  };
 
   const handleImageLoad = (imageUrl: string) => {
     setLoadedImages((prev) => new Set(prev).add(imageUrl));
@@ -155,7 +137,7 @@ const ImagePreviewContent = () => {
                     generation?.images.length === 1 ? "" : `_${index + 1}`;
                   const fileName = `${generation?.filename}${suffix}.jpg`;
 
-                  handleDownload(image.url, fileName);
+                  downloadImage(image.url, fileName);
                 }}
               >
                 Download

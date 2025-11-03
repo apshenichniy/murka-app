@@ -1,30 +1,82 @@
 "use client";
 
-import { Badge, Button, CopyButton, Paper, Text } from "@mantine/core";
+import {
+  ActionIcon,
+  Badge,
+  Button,
+  CopyButton,
+  Modal,
+  Paper,
+  Text,
+} from "@mantine/core";
 import { useQuery } from "convex/react";
 import { formatDistance } from "date-fns";
-import { CopyIcon, PlayIcon } from "lucide-react";
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  CopyIcon,
+  DownloadIcon,
+  PencilIcon,
+  PlayIcon,
+} from "lucide-react";
 import Image from "next/image";
+import { useState } from "react";
 import { type AspectRatio, MAX_IMAGES } from "@/lib/constants";
+import { downloadImage } from "@/lib/download-image";
 import { useAppStore } from "@/store/app-store";
 import { api } from "../../convex/_generated/api";
 import type { Doc } from "../../convex/_generated/dataModel";
 
 export const History = () => {
   const generations = useQuery(api.generations.getUserGenerations);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedGeneration, setSelectedGeneration] =
+    useState<Doc<"generations"> | null>(null);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+
+  const handleImageClick = (
+    generation: Doc<"generations">,
+    imageIndex: number
+  ) => {
+    setSelectedGeneration(generation);
+    setSelectedImageIndex(imageIndex);
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    setSelectedGeneration(null);
+    setSelectedImageIndex(0);
+  };
 
   return (
-    <div className="grid grid-cols-1 gap-4 md:gap-6">
-      {generations?.map((generation) => (
-        <GenerationCard key={generation._id} generation={generation} />
-      ))}
-    </div>
+    <>
+      <div className="grid grid-cols-1 gap-4 md:gap-6">
+        {generations?.map((generation) => (
+          <GenerationCard
+            key={generation._id}
+            generation={generation}
+            onImageClick={handleImageClick}
+          />
+        ))}
+      </div>
+      {selectedGeneration && (
+        <ImageModal
+          generation={selectedGeneration}
+          imageIndex={selectedImageIndex}
+          isOpen={modalOpen}
+          onClose={handleCloseModal}
+          onNavigate={setSelectedImageIndex}
+        />
+      )}
+    </>
   );
 };
 
-const GenerationCard: React.FC<{ generation: Doc<"generations"> }> = ({
-  generation,
-}) => {
+const GenerationCard: React.FC<{
+  generation: Doc<"generations">;
+  onImageClick: (generation: Doc<"generations">, imageIndex: number) => void;
+}> = ({ generation, onImageClick }) => {
   const { loadGenerationToForm } = useAppStore();
   const distance = formatDistance(new Date(), new Date(generation.createdAt));
   const emptyImageSlots = Math.min(MAX_IMAGES - generation.images.length, 1);
@@ -47,8 +99,13 @@ const GenerationCard: React.FC<{ generation: Doc<"generations"> }> = ({
           </Text>
         </div>
         <div className="grid grid-cols-2 gap-2 shrink-0">
-          {generation.images.map((image) => (
-            <div key={image.url} className="relative h-32 aspect-square">
+          {generation.images.map((image, index) => (
+            <button
+              key={image.url}
+              type="button"
+              className="relative h-32 aspect-square hover:cursor-pointer hover:opacity-90 transition-opacity"
+              onClick={() => onImageClick(generation, index)}
+            >
               <Image
                 key={image.url}
                 src={image.url}
@@ -56,7 +113,7 @@ const GenerationCard: React.FC<{ generation: Doc<"generations"> }> = ({
                 fill
                 className="object-cover rounded"
               />
-            </div>
+            </button>
           ))}
           {Array.from({ length: emptyImageSlots }).map((_, index) => (
             <div
@@ -99,5 +156,110 @@ const GenerationCard: React.FC<{ generation: Doc<"generations"> }> = ({
         </CopyButton>
       </div>
     </Paper>
+  );
+};
+
+const ImageModal: React.FC<{
+  generation: Doc<"generations">;
+  imageIndex: number;
+  isOpen: boolean;
+  onClose: () => void;
+  onNavigate: (index: number) => void;
+}> = ({ generation, imageIndex, isOpen, onClose, onNavigate }) => {
+  const { resetForm, setFormReferenceImage, setActiveTab } = useAppStore();
+  const currentImage = generation.images[imageIndex];
+  const totalImages = generation.images.length;
+  const canGoPrevious = imageIndex > 0;
+  const canGoNext = imageIndex < totalImages - 1;
+
+  const handleEdit = () => {
+    resetForm();
+    setFormReferenceImage(currentImage.url);
+    setActiveTab("image-edit");
+    onClose();
+  };
+
+  const handleDownloadClick = () => {
+    const suffix = totalImages === 1 ? "" : `_${imageIndex + 1}`;
+    const fileName = `${generation.filename}${suffix}.jpg`;
+    downloadImage(currentImage.url, fileName);
+  };
+
+  const handlePrevious = () => {
+    if (canGoPrevious) {
+      onNavigate(imageIndex - 1);
+    }
+  };
+
+  const handleNext = () => {
+    if (canGoNext) {
+      onNavigate(imageIndex + 1);
+    }
+  };
+
+  return (
+    <Modal
+      opened={isOpen}
+      onClose={onClose}
+      size="auto"
+      centered
+      withCloseButton
+      padding="lg"
+    >
+      <div className="flex flex-col items-center gap-4">
+        <div className="flex items-center gap-4">
+          {totalImages > 1 && (
+            <ActionIcon
+              variant="subtle"
+              onClick={handlePrevious}
+              disabled={!canGoPrevious}
+              className="shrink-0"
+            >
+              <ChevronLeftIcon size={24} strokeWidth={2} />
+            </ActionIcon>
+          )}
+
+          <div className="max-w-[80vw] max-h-[70vh] relative">
+            {/** biome-ignore lint/performance/noImgElement: generated image */}
+            <img
+              src={currentImage.url}
+              alt={currentImage.file_name}
+              className="max-w-full max-h-[70vh] object-contain rounded"
+            />
+          </div>
+
+          {totalImages > 1 && (
+            <ActionIcon
+              variant="subtle"
+              onClick={handleNext}
+              disabled={!canGoNext}
+              className="shrink-0"
+            >
+              <ChevronRightIcon size={24} strokeWidth={2} />
+            </ActionIcon>
+          )}
+        </div>
+
+        <div className="flex items-center gap-2 justify-start w-full">
+          <Button
+            variant="outline"
+            size="compact-sm"
+            leftSection={<PencilIcon size={16} strokeWidth={1.5} />}
+            onClick={handleEdit}
+          >
+            Edit
+          </Button>
+          <Button
+            variant="outline"
+            size="compact-sm"
+            color="gray"
+            leftSection={<DownloadIcon size={16} strokeWidth={1.5} />}
+            onClick={handleDownloadClick}
+          >
+            Download
+          </Button>
+        </div>
+      </div>
+    </Modal>
   );
 };
