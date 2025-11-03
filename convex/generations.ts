@@ -139,7 +139,6 @@ export const createFilenameForGeneration = internalAction({
 // Action that returns the generation ID immediately
 export const createImageGeneration = action({
   args: {
-    model: v.string(),
     prompt: v.string(),
     aspectRatio: v.string(),
     numberOfImages: v.number(),
@@ -151,9 +150,13 @@ export const createImageGeneration = action({
       throw new Error("Unauthenticated call to action");
     }
 
-    const { prompt, model, numberOfImages, aspectRatio, referenceImages } =
-      args;
+    const { prompt, numberOfImages, aspectRatio, referenceImages } = args;
     const userId = identity.tokenIdentifier;
+
+    const model =
+      referenceImages.length > 0
+        ? "fal-ai/nano-banana/edit"
+        : "fal-ai/nano-banana";
 
     // Insert generation into database
     const generationId = await ctx.runMutation(
@@ -176,6 +179,7 @@ export const createImageGeneration = action({
         prompt,
         numberOfImages,
         aspectRatio,
+        referenceImages,
       }),
       ctx.scheduler.runAfter(
         0,
@@ -200,9 +204,17 @@ export const processImageGeneration = internalAction({
     prompt: v.string(),
     aspectRatio: v.string(),
     numberOfImages: v.number(),
+    referenceImages: v.array(v.string()),
   },
   handler: async (ctx, args) => {
-    const { generationId, model, prompt, numberOfImages, aspectRatio } = args;
+    const {
+      generationId,
+      model,
+      prompt,
+      numberOfImages,
+      aspectRatio,
+      referenceImages,
+    } = args;
 
     try {
       // Call the image generation API
@@ -211,6 +223,7 @@ export const processImageGeneration = internalAction({
           prompt,
           num_images: numberOfImages,
           aspect_ratio: aspectRatio,
+          image_urls: referenceImages,
         },
         logs: true,
         onQueueUpdate: async (update) => {

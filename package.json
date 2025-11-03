@@ -14,6 +14,7 @@
     "@ai-sdk/react": "^2.0.86",
     "@clerk/nextjs": "^6.34.1",
     "@fal-ai/client": "^1.7.2",
+    "@fal-ai/server-proxy": "^1.1.1",
     "@mantine/core": "^8.3.6",
     "@mantine/dropzone": "^8.3.6",
     "@mantine/form": "^8.3.6",

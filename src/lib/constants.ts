@@ -33,3 +33,6 @@ export const ImageGenerationResponseSchema = z.object({
   images: z.array(FileSchema),
   description: z.string().nullable(),
 });
+
+export const MAX_REFERENCE_IMAGES = 4;
+export const MAX_IMAGES = 4;

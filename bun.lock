@@ -8,6 +8,7 @@
         "@ai-sdk/react": "^2.0.86",
         "@clerk/nextjs": "^6.34.1",
         "@fal-ai/client": "^1.7.2",
+        "@fal-ai/server-proxy": "^1.1.1",
         "@mantine/core": "^8.3.6",
         "@mantine/dropzone": "^8.3.6",
         "@mantine/form": "^8.3.6",
@@ -136,6 +137,8 @@
     "@esbuild/win32-x64": ["@esbuild/win32-x64@0.25.4", "", { "os": "win32", "cpu": "x64" }, "sha512-nOT2vZNw6hJ+z43oP1SPea/G/6AbN6X+bGNhNuq8NtRHy4wsMhw765IKLNmnjek7GvjWBYQ8Q5VBoYTFg9y1UQ=="],
 
     "@fal-ai/client": ["@fal-ai/client@1.7.2", "", { "dependencies": { "@msgpack/msgpack": "^3.0.0-beta2", "eventsource-parser": "^1.1.2", "robot3": "^0.4.1" } }, "sha512-RZ1Qz2Kza4ExKPy2D+2UUWthNApe+oZe8D1Wcxqleyn4F344MOm8ibgqG2JSVmybEcJAD4q44078WYfb6Q9c6w=="],
+
+    "@fal-ai/server-proxy": ["@fal-ai/server-proxy@1.1.1", "", { "peerDependencies": { "@remix-run/dev": "^2.0.0", "@sveltejs/kit": "^2.0.0", "express": "^4.0.0", "hono": "^4.0.0", "next": "13.4 - 14 || >=15.0.0-0", "react": "^18.0.0 || >=19.0.0-0", "react-dom": "^18.0.0 || >=19.0.0-0" }, "optionalPeers": ["@remix-run/dev", "@sveltejs/kit", "express", "hono", "next", "react", "react-dom"] }, "sha512-wAouRtsQLveD3DA8+GpDYvWoPHSCreYn18Xi2I+iwgDnFyn76+h5jc3LgvtEelOa2WKvkkzh6XkQbpGqGLFBYw=="],
 
     "@floating-ui/core": ["@floating-ui/core@1.7.3", "", { "dependencies": { "@floating-ui/utils": "^0.2.10" } }, "sha512-sGnvb5dmrJaKEZ+LDIpguvdX3bDlEllmv4/ClQ9awcmCZrlx5jQyyMWFM5kBI+EyNOCDDiKk8il0zeuX3Zlg/w=="],
 

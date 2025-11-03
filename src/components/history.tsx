@@ -1,10 +1,11 @@
 "use client";
 
-import { Button, CopyButton, Paper, Text } from "@mantine/core";
+import { Badge, Button, CopyButton, Paper, Text } from "@mantine/core";
 import { useQuery } from "convex/react";
 import { formatDistance } from "date-fns";
 import { CopyIcon, PlayIcon } from "lucide-react";
 import Image from "next/image";
+import { MAX_IMAGES } from "@/lib/constants";
 import { api } from "../../convex/_generated/api";
 import type { Doc } from "../../convex/_generated/dataModel";
 
@@ -24,25 +25,28 @@ const GenerationCard: React.FC<{ generation: Doc<"generations"> }> = ({
   generation,
 }) => {
   const distance = formatDistance(new Date(), new Date(generation.createdAt));
+  const emptyImageSlots = Math.min(MAX_IMAGES - generation.images.length, 1);
 
   return (
     <Paper shadow="md" p="md" className="flex items-center flex-col">
-      <div className="flex items-center gap-4">
-        <div className="flex flex-col flex-1 min-w-0 pr-4 gap-2">
+      <div className="flex items-start gap-4 w-full">
+        <div className="flex flex-col flex-1 min-w-0 gap-2">
           <Text size="md" fw={600}>
             {distance} ago
           </Text>
+          <Badge
+            color={generation.model === "fal-ai/nano-banana" ? "green" : "gray"}
+          >
+            {generation.model}
+          </Badge>
           <Text size="sm">{generation.prompt}</Text>
           <Text size="sm" c="dimmed">
             Aspect ratio: {generation.aspectRatio}
           </Text>
         </div>
-        <div className="flex items-center gap-2 h-full">
+        <div className="grid grid-cols-2 gap-2 shrink-0">
           {generation.images.map((image) => (
-            <div
-              key={image.url}
-              className="relative h-32 aspect-square shrink-0"
-            >
+            <div key={image.url} className="relative h-32 aspect-square">
               <Image
                 key={image.url}
                 src={image.url}
@@ -51,6 +55,15 @@ const GenerationCard: React.FC<{ generation: Doc<"generations"> }> = ({
                 className="object-cover rounded"
               />
             </div>
+          ))}
+          {Array.from({ length: emptyImageSlots }).map((_, index) => (
+            <div
+              key={`empty-image-${
+                // biome-ignore lint/suspicious/noArrayIndexKey: empty image slot
+                index
+              }`}
+              className="relative h-32 aspect-square"
+            />
           ))}
         </div>
       </div>
