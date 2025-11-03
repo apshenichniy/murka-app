@@ -39,7 +39,7 @@ const initialFormState = {
 
 export const useAppStore = create<AppStore>()(
   devtools((set) => ({
-    activeTab: "image-edit",
+    activeTab: "text-to-image",
     setActiveTab: (tab) => set({ activeTab: tab }),
     currentGenerationId: null,
     setCurrentGenerationId: (generationId) =>
@@ -63,6 +63,8 @@ export const useAppStore = create<AppStore>()(
         formAspectRatio: aspectRatio,
         activeTab:
           model === "fal-ai/nano-banana/edit" ? "image-edit" : "text-to-image",
+        currentGenerationId: null,
+        formReferenceImages: [],
       }),
   }))
 );
