@@ -10,17 +10,36 @@
     "format": "biome format --write"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^2.0.59",
+    "@ai-sdk/react": "^2.0.86",
+    "@clerk/nextjs": "^6.34.1",
+    "@fal-ai/client": "^1.7.2",
+    "@mantine/core": "^8.3.6",
+    "@mantine/dropzone": "^8.3.6",
+    "@mantine/form": "^8.3.6",
+    "@mantine/hooks": "^8.3.6",
+    "ai": "^5.0.86",
+    "convex": "^1.28.0",
+    "date-fns": "^4.1.0",
+    "lucide-react": "^0.552.0",
+    "next": "16.0.1",
     "react": "19.2.0",
     "react-dom": "19.2.0",
-    "next": "16.0.1"
+    "tailwind-merge": "^3.3.1",
+    "tailwind-preset-mantine": "^3.0.2",
+    "zod": "^4.1.12",
+    "zustand": "^5.0.8"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@biomejs/biome": "2.2.0",
+    "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@tailwindcss/postcss": "^4",
     "tailwindcss": "^4",
-    "@biomejs/biome": "2.2.0"
-  }
+    "typescript": "^5"
+  },
+  "trustedDependencies": [
+    "@clerk/shared"
+  ]
 }
