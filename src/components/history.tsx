@@ -3,7 +3,7 @@
 import { Button, CopyButton, Paper, Text } from "@mantine/core";
 import { useQuery } from "convex/react";
 import { formatDistance } from "date-fns";
-import { CopyIcon, PencilIcon, PlayIcon } from "lucide-react";
+import { CopyIcon, PlayIcon } from "lucide-react";
 import Image from "next/image";
 import { api } from "../../convex/_generated/api";
 import type { Doc } from "../../convex/_generated/dataModel";
