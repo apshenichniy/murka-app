@@ -123,7 +123,12 @@ export const createFilenameForGeneration = internalAction({
       object: { filename },
     } = await generateObject({
       model: "google/gemini-2.5-flash",
-      prompt: `Generate a short, concise filename for an image based on the given prompt. The filename must contain 1–3 words and use underscores to join them.: ${prompt}`,
+      prompt: `
+      Generate a short, concise filename for an image based on the given prompt. 
+      The filename must contain 1–3 words and use underscores to join them. 
+      Use lowercase letters and numbers only, English language only.
+      Output ONLY the final filename.
+      Filename: ${prompt}`,
       schema: z.object({
         filename: z.string(),
       }),
