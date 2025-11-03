@@ -57,7 +57,7 @@ export const App = () => {
         <Navbar />
       </AppShell.Navbar>
       <AppShell.Footer>
-        <Text size="xs" fw={500} className="text-center md:translate-x-[120px]">
+        <Text size="xs" fw={500} className="text-center">
           Made with ❤️ for Murka · Valencia, 2025
         </Text>
       </AppShell.Footer>
@@ -66,7 +66,7 @@ export const App = () => {
         <div
           className={
             activeTab === "image-edit" || activeTab === "text-to-image"
-              ? "block"
+              ? "block pb-10"
               : "hidden"
           }
         >

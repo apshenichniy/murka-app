@@ -33,12 +33,8 @@ export const ImagePreview = () => {
 };
 
 const ImagePreviewContent = () => {
-  const {
-    currentGenerationId,
-    resetForm,
-    setFormReferenceImage,
-    setActiveTab,
-  } = useAppStore();
+  const { currentGenerationId, resetForm, setFormReferenceImage, navigateTo } =
+    useAppStore();
   const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
 
   // Subscribe to generation updates
@@ -121,7 +117,7 @@ const ImagePreviewContent = () => {
                 onClick={() => {
                   resetForm();
                   setFormReferenceImage(image.url);
-                  setActiveTab("image-edit");
+                  navigateTo("image-edit");
                 }}
               >
                 Edit
