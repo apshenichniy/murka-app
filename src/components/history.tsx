@@ -79,7 +79,7 @@ const GenerationCard: React.FC<{
 }> = ({ generation, onImageClick }) => {
   const { loadGenerationToForm } = useAppStore();
   const distance = formatDistance(new Date(), new Date(generation.createdAt));
-  const emptyImageSlots = Math.min(MAX_IMAGES - generation.images.length, 1);
+  const emptyImageSlots = (MAX_IMAGES - generation.images.length) % 2;
 
   return (
     <Paper shadow="md" p="md" className="flex items-center flex-col">
