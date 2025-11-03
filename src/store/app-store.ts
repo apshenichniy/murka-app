@@ -14,8 +14,12 @@ export type AppStore = {
   formNumberOfImages: number;
   formReferenceImages: string[];
 
+  // navbar opened state
+  navbarOpened: boolean;
+  toggleNavbar: () => void;
+
   // actions
-  setActiveTab: (tab: "image-edit" | "text-to-image" | "history") => void;
+  navigateTo: (tab: "image-edit" | "text-to-image" | "history") => void;
   setCurrentGenerationId: (generationId: Id<"generations"> | null) => void;
   resetForm: () => void;
   setFormPrompt: (prompt: string) => void;
@@ -40,7 +44,11 @@ const initialFormState = {
 export const useAppStore = create<AppStore>()(
   devtools((set) => ({
     activeTab: "text-to-image",
-    setActiveTab: (tab) => set({ activeTab: tab }),
+    navbarOpened: false,
+
+    toggleNavbar: () => set((state) => ({ navbarOpened: !state.navbarOpened })),
+    navigateTo: (tab) => set({ activeTab: tab, navbarOpened: false }),
+
     currentGenerationId: null,
     setCurrentGenerationId: (generationId) =>
       set({ currentGenerationId: generationId }),

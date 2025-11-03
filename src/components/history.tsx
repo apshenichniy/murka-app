@@ -9,6 +9,7 @@ import {
   Paper,
   Text,
 } from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
 import { useQuery } from "convex/react";
 import { formatDistance } from "date-fns";
 import {
@@ -83,7 +84,7 @@ const GenerationCard: React.FC<{
 
   return (
     <Paper shadow="md" p="md" className="flex items-center flex-col">
-      <div className="flex items-start gap-4 w-full">
+      <div className="flex flex-col md:flex-row items-start gap-4 w-full">
         <div className="flex flex-col flex-1 min-w-0 gap-2">
           <Text size="md" fw={600}>
             {distance} ago
@@ -111,7 +112,7 @@ const GenerationCard: React.FC<{
                 src={image.url}
                 alt={image.file_name}
                 fill
-                className="object-cover rounded"
+                className="object-cover rounded-xs"
               />
             </button>
           ))}
@@ -129,7 +130,7 @@ const GenerationCard: React.FC<{
       <div className="flex items-center justify-start w-full gap-2 mt-4">
         <Button
           variant="outline"
-          size="sm"
+          size="compact-sm"
           leftSection={<PlayIcon size={16} strokeWidth={1.5} />}
           onClick={() =>
             loadGenerationToForm(
@@ -145,7 +146,7 @@ const GenerationCard: React.FC<{
           {({ copied, copy }) => (
             <Button
               variant="outline"
-              size="sm"
+              size="compact-sm"
               onClick={copy}
               color={copied ? "green" : "gray"}
               leftSection={<CopyIcon size={16} strokeWidth={1.5} />}
@@ -166,7 +167,9 @@ const ImageModal: React.FC<{
   onClose: () => void;
   onNavigate: (index: number) => void;
 }> = ({ generation, imageIndex, isOpen, onClose, onNavigate }) => {
-  const { resetForm, setFormReferenceImage, setActiveTab } = useAppStore();
+  const isMobile = useMediaQuery("(max-width: 50em)");
+
+  const { resetForm, setFormReferenceImage, navigateTo } = useAppStore();
   const currentImage = generation.images[imageIndex];
   const totalImages = generation.images.length;
   const canGoPrevious = imageIndex > 0;
@@ -175,7 +178,7 @@ const ImageModal: React.FC<{
   const handleEdit = () => {
     resetForm();
     setFormReferenceImage(currentImage.url);
-    setActiveTab("image-edit");
+    navigateTo("image-edit");
     onClose();
   };
 
@@ -202,38 +205,37 @@ const ImageModal: React.FC<{
       opened={isOpen}
       onClose={onClose}
       size="auto"
+      fullScreen={isMobile}
       centered
       withCloseButton
-      padding="lg"
+      padding={isMobile ? "sm" : "md"}
     >
       <div className="flex flex-col items-center gap-4">
-        <div className="flex items-center gap-4">
-          {totalImages > 1 && (
+        <div className="max-w-[80vw]- max-h-[70vh]- relative">
+          {canGoPrevious && (
             <ActionIcon
-              variant="subtle"
+              variant="transparent"
+              c="white"
               onClick={handlePrevious}
               disabled={!canGoPrevious}
-              className="shrink-0"
+              className="shrink-0 absolute left-2 top-1/2 -translate-y-1/2"
             >
               <ChevronLeftIcon size={24} strokeWidth={2} />
             </ActionIcon>
           )}
-
-          <div className="max-w-[80vw] max-h-[70vh] relative">
-            {/** biome-ignore lint/performance/noImgElement: generated image */}
-            <img
-              src={currentImage.url}
-              alt={currentImage.file_name}
-              className="max-w-full max-h-[70vh] object-contain rounded"
-            />
-          </div>
-
-          {totalImages > 1 && (
+          {/** biome-ignore lint/performance/noImgElement: generated image */}
+          <img
+            src={currentImage.url}
+            alt={currentImage.file_name}
+            className="max-w-full max-h-[70vh] object-contain rounded"
+          />
+          {canGoNext && (
             <ActionIcon
-              variant="subtle"
+              variant="transparent"
+              c="white"
               onClick={handleNext}
               disabled={!canGoNext}
-              className="shrink-0"
+              className="shrink-0 absolute right-2 top-1/2 -translate-y-1/2"
             >
               <ChevronRightIcon size={24} strokeWidth={2} />
             </ActionIcon>
