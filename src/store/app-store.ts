@@ -13,6 +13,8 @@ export type AppStore = {
   formAspectRatio: AspectRatio;
   formNumberOfImages: number;
   formReferenceImages: string[];
+  selectedPresetId: string | null;
+  isPresetDirty: boolean;
 
   // navbar opened state
   navbarOpened: boolean;
@@ -27,6 +29,14 @@ export type AppStore = {
   setFormAspectRatio: (aspectRatio: AspectRatio) => void;
   setFormNumberOfImages: (numberOfImages: number) => void;
   setFormReferenceImages: (images: string[]) => void;
+  setSelectedPresetId: (presetId: string | null) => void;
+  applyPreset: (payload: {
+    id: string;
+    prompt: string;
+    aspectRatio?: AspectRatio | null;
+    numberOfImages?: number | null;
+  }) => void;
+  markPresetDirty: () => void;
   loadGenerationToForm: (
     prompt: string,
     aspectRatio: AspectRatio,
@@ -38,7 +48,9 @@ const initialFormState = {
   formPrompt: "",
   formAspectRatio: "1:1" as AspectRatio,
   formNumberOfImages: 1,
-  formReferenceImages: [],
+  formReferenceImages: [] as string[],
+  selectedPresetId: null,
+  isPresetDirty: false,
 };
 
 export const useAppStore = create<AppStore>()(
@@ -65,6 +77,25 @@ export const useAppStore = create<AppStore>()(
     setFormNumberOfImages: (numberOfImages) =>
       set({ formNumberOfImages: numberOfImages }),
     setFormReferenceImages: (images) => set({ formReferenceImages: images }),
+    setSelectedPresetId: (presetId) =>
+      set({
+        selectedPresetId: presetId,
+        isPresetDirty: false,
+      }),
+    applyPreset: ({ id, prompt, aspectRatio, numberOfImages }) =>
+      set((state) => ({
+        formPrompt: prompt,
+        formAspectRatio: (aspectRatio ?? state.formAspectRatio) as AspectRatio,
+        formNumberOfImages: numberOfImages ?? state.formNumberOfImages,
+        selectedPresetId: id,
+        isPresetDirty: false,
+      })),
+    markPresetDirty: () =>
+      set((state) =>
+        state.selectedPresetId && !state.isPresetDirty
+          ? { isPresetDirty: true }
+          : state
+      ),
     loadGenerationToForm: (prompt, aspectRatio, model) =>
       set({
         formPrompt: prompt,
@@ -73,6 +104,8 @@ export const useAppStore = create<AppStore>()(
           model === "fal-ai/nano-banana/edit" ? "image-edit" : "text-to-image",
         currentGenerationId: null,
         formReferenceImages: [],
+        selectedPresetId: null,
+        isPresetDirty: false,
       }),
   }))
 );

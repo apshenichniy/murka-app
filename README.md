@@ -8,9 +8,17 @@ A labor of love, built in Valencia, 2025 ❤️
 
 - **Text-to-Image Generation**: Create stunning images from text descriptions using the Nano Banana model
 - **Image Editing**: Transform existing images with AI-guided modifications using reference images
+- **Prompt Presets & Style Packs**: Save your favorite prompts, browse curated style packs, and reapply them in one click
 - **Generation History**: Browse and manage all your previously generated creations
 - **User Authentication**: Secure access with Clerk authentication
 - **Real-time Updates**: Live status tracking during image generation process
+
+### Prompt Presets & Style Packs
+
+- Open the playground and select any preset or curated style pack from the new preset selector above the prompt field.
+- Save the current prompt (and optional aspect ratio/number of images) as a reusable preset via the **Save preset** button.
+- Manage, edit, or delete your presets — plus browse published style packs — from the preset manager drawer.
+- Public presets are available to the whole workspace; private presets stay scoped to your account.
 
 ## Tech Stack
 

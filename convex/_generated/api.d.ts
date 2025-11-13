@@ -9,6 +9,7 @@
  */
 
 import type * as generations from "../generations.js";
+import type * as presets from "../presets.js";
 
 import type {
   ApiFromModules,
@@ -26,6 +27,7 @@ import type {
  */
 declare const fullApi: ApiFromModules<{
   generations: typeof generations;
+  presets: typeof presets;
 }>;
 declare const fullApiWithMounts: typeof fullApi;
 

@@ -25,4 +25,23 @@ export default defineSchema({
     status: v.string(),
     userId: v.string(),
   }),
+  presets: defineTable({
+    userId: v.string(),
+    name: v.string(),
+    prompt: v.string(),
+    description: v.string(),
+    tags: v.array(v.string()),
+    visibility: v.union(v.literal("private"), v.literal("public")),
+    isDefault: v.boolean(),
+    isSystem: v.boolean(),
+    usageCount: v.number(),
+    favoriteUserIds: v.array(v.string()),
+    aspectRatio: v.optional(v.string()),
+    numberOfImages: v.optional(v.number()),
+    createdAt: v.string(),
+    updatedAt: v.string(),
+  })
+    .index("by_userId", ["userId"])
+    .index("by_visibility", ["visibility"])
+    .index("by_name", ["name"]),
 });
