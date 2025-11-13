@@ -17,7 +17,6 @@
     "@fal-ai/server-proxy": "^1.1.1",
     "@mantine/core": "^8.3.6",
     "@mantine/dropzone": "^8.3.6",
-    "@mantine/form": "^8.3.6",
     "@mantine/hooks": "^8.3.6",
     "ai": "^5.0.86",
     "convex": "^1.28.0",

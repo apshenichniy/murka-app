@@ -9,7 +9,6 @@ import {
   Text,
   Textarea,
 } from "@mantine/core";
-import { useForm } from "@mantine/form";
 import { useAction, useQuery } from "convex/react";
 import {
   BrushCleaningIcon,
@@ -18,7 +17,6 @@ import {
   WandIcon,
   ZapIcon,
 } from "lucide-react";
-import { useEffect } from "react";
 import { cn } from "@/lib/cn";
 import { ASPECT_RATIOS, type AspectRatio } from "@/lib/constants";
 import { useAppStore } from "@/store/app-store";
@@ -44,38 +42,11 @@ export const PromptInput = () => {
   const { complete, completion, isLoading } = useCompletion({
     api: "/api/refine",
     onFinish: (_prompt, completion) => {
-      form.setFieldValue("prompt", completion);
       setFormPrompt(completion);
     },
   });
 
-  const form = useForm<{
-    prompt: string;
-    aspectRatio: AspectRatio;
-    numberOfImages: number;
-    referenceImages: string[];
-  }>({
-    initialValues: {
-      prompt: formPrompt,
-      aspectRatio: formAspectRatio,
-      numberOfImages: formNumberOfImages,
-      referenceImages: formReferenceImages,
-    },
-  });
-
-  // Sync form with store when store values change
-  useEffect(() => {
-    form.setValues({
-      prompt: formPrompt,
-      aspectRatio: formAspectRatio,
-      numberOfImages: formNumberOfImages,
-      referenceImages: formReferenceImages,
-    });
-  }, [formPrompt, formAspectRatio, formNumberOfImages, formReferenceImages]);
-
-  const textAreaValue = isLoading
-    ? completion || form.values.prompt
-    : form.values.prompt;
+  const textAreaValue = isLoading ? completion || formPrompt : formPrompt;
 
   const createImageGeneration = useAction(
     api.generations.createImageGeneration
@@ -83,10 +54,10 @@ export const PromptInput = () => {
 
   const handleGenerate = async () => {
     const generationId = await createImageGeneration({
-      prompt: form.values.prompt,
-      aspectRatio: form.values.aspectRatio,
-      numberOfImages: form.values.numberOfImages,
-      referenceImages: form.values.referenceImages,
+      prompt: formPrompt,
+      aspectRatio: formAspectRatio,
+      numberOfImages: formNumberOfImages,
+      referenceImages: formReferenceImages,
     });
     setCurrentGenerationId(generationId);
   };
@@ -100,16 +71,18 @@ export const PromptInput = () => {
     !!generation &&
     ["SUBMITTED", "IN_QUEUE", "IN_PROGRESS"].includes(generation.status);
 
-  const isPromptValid = form.values.prompt.trim().length >= 10;
+  const isPromptValid = formPrompt.trim().length >= 10;
 
   const isGenerateButtonDisabled =
     isLoading || !isPromptValid || isGenerationInProgress;
 
-  const handleReset = () => {
-    resetForm();
-  };
-
   const isRefineButtonDisabled = isLoading || !isPromptValid;
+
+  const isFormDirty =
+    formPrompt !== "" ||
+    formAspectRatio !== "1:1" ||
+    formNumberOfImages !== 1 ||
+    formReferenceImages.length > 0;
 
   return (
     <div className="space-y-4">
@@ -126,8 +99,8 @@ export const PromptInput = () => {
             size="compact-xs"
             color="gray"
             leftSection={<BrushCleaningIcon size={16} strokeWidth={1.5} />}
-            disabled={!form.isDirty()}
-            onClick={handleReset}
+            disabled={!isFormDirty}
+            onClick={resetForm}
           >
             Reset
           </Button>
@@ -141,7 +114,6 @@ export const PromptInput = () => {
           readOnly={isLoading}
           onChange={(e) => {
             if (!isLoading) {
-              form.setFieldValue("prompt", e.target.value);
               setFormPrompt(e.target.value);
             }
           }}
@@ -160,18 +132,15 @@ export const PromptInput = () => {
             "w-fit -mt-1.5",
             isRefineButtonDisabled && "opacity-50 pointer-events-none"
           )}
-          onClick={async () => await complete(form.values.prompt)}
+          onClick={async () => await complete(formPrompt)}
         >
           Refine prompt
         </Button>
         {activeTab === "image-edit" && (
           <InputWrapper label="Reference images">
             <ReferenceImagesUpload
-              referenceImages={form.values.referenceImages}
-              onChange={(images) => {
-                form.setFieldValue("referenceImages", images);
-                setFormReferenceImages(images);
-              }}
+              referenceImages={formReferenceImages}
+              onChange={setFormReferenceImages}
             />
           </InputWrapper>
         )}
@@ -179,21 +148,17 @@ export const PromptInput = () => {
           <Select
             label="Aspect ratio"
             data={ASPECT_RATIOS}
-            value={form.values.aspectRatio}
+            value={formAspectRatio}
             onChange={(value) => {
-              const aspectRatio = value as AspectRatio;
-              form.setFieldValue("aspectRatio", aspectRatio);
-              setFormAspectRatio(aspectRatio);
+              setFormAspectRatio(value as AspectRatio);
             }}
           />
           <Select
             label="Number of images"
             data={["1", "2", "3", "4"]}
-            value={form.values.numberOfImages.toString()}
+            value={formNumberOfImages.toString()}
             onChange={(value) => {
-              const numberOfImages = Number(value);
-              form.setFieldValue("numberOfImages", numberOfImages);
-              setFormNumberOfImages(numberOfImages);
+              setFormNumberOfImages(Number(value));
             }}
           />
         </div>
